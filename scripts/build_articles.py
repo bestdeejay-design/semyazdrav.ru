@@ -17,7 +17,7 @@ TODAY = os.environ.get("CONTENT_DATE", "2026-09-30")
 SITE_BASE = os.environ.get(
     "SITE_BASE_URL", "https://bestdeejay-design.github.io/semyazdrav.ru"
 ).rstrip("/") + "/"
-PRODUCT_URL = "https://www.wildberries.ru/catalog/9588149/detail.aspx"
+PRODUCT_URL = "https://www.wildberries.ru/catalog/784598331/detail.aspx"
 
 
 def e(value: str) -> str:
