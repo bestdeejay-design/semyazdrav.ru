@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import date
 from html import escape
 from pathlib import Path
 from urllib.parse import quote
@@ -28,7 +27,7 @@ def json_script(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
-def page_header(prefix: str, subtitle: str, home_href: str, blog_href: str, product_href: str) -> str:
+def page_header(home_href: str, blog_href: str, product_href: str) -> str:
     return f'''<div class="topline">Уход за растениями — просто и бережно</div>
 <header class="site-header">
   <a class="brand" href="{home_href}" aria-label="Семяздрав — на главную"><span class="brand__mark" aria-hidden="true">✳</span><span>семя<b>здрав</b></span></a>
@@ -67,6 +66,13 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
     blog_href = "../"
     product_href = "../../index.html#product"
     page_title = f"{title} — Семяздрав"
+    reading_text = " ".join([
+        article["lead"],
+        tips[slug],
+        *(section["heading"] + " " + " ".join(section.get("paragraphs", [])) for section in article["sections"]),
+        *(question + " " + answer for question, answer in article.get("faq", [])),
+    ])
+    reading_minutes = max(1, (len(re.findall(r"[\wЁё-]+", reading_text)) + 179) // 180)
 
     toc = []
     sections_html = []
@@ -167,12 +173,12 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
 <script type="application/ld+json">{json_script({"@context":"https://schema.org","@graph":graph})}</script>
 </head>
 <body>
-{page_header("", "", home_href, blog_href, product_href)}
+{page_header(home_href, blog_href, product_href)}
 <main class="article-shell">
   <div class="breadcrumbs"><a href="{home_href}">Главная</a><span>／</span><a href="{blog_href}">Статьи</a><span>／</span><span>{e(title)}</span></div>
   <div class="article-layout">
     <article class="article">
-      <header class="article-header"><p class="eyebrow">{e(article["category"])} <span>·</span> 5 минут чтения</p><h1>{e(title)}</h1><p class="article-lead">{e(article["lead"])}</p><p class="article-updated">Материал обновлён {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]} · Справочная информация, не заменяет инструкцию на упаковке.</p></header>
+      <header class="article-header"><p class="eyebrow">{e(article["category"])} <span>·</span> {reading_minutes} мин чтения</p><h1>{e(title)}</h1><p class="article-lead">{e(article["lead"])}</p><p class="article-updated">Материал обновлён {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]} · Справочная информация, не заменяет инструкцию на упаковке.</p></header>
       <nav class="toc" aria-label="Содержание статьи"><b>В статье</b>{''.join(toc)}</nav>
       {''.join(sections_html)}
       {tip_html}
@@ -237,7 +243,7 @@ def render_index(articles: list[dict]) -> str:
 <script type="application/ld+json">{json_script(collection_schema)}</script>
 </head>
 <body>
-{page_header("", "", "../index.html", "./", "../index.html#product")}
+{page_header("../index.html", "./", "../index.html#product")}
 <main>
 <section class="library-hero"><div class="library-hero__inner"><p class="eyebrow">БАЗА ЗНАНИЙ СЕМЯЗДРАВ</p><h1>Растениям —<br><em>понятный уход.</em></h1><p>Практические ответы о подкормках, дозировках и уходе за комнатными растениями и рассадой — без обещаний чудес и советов «на глаз».</p><div class="library-stats"><span><b>{len(articles)}</b> статей</span><span><b>{len(categories)}</b> тематических разделов</span><span>Обновлено {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]}</span></div></div><div class="library-hero__art" aria-hidden="true"><span>✳</span><i></i><b>ЗНАНИЯ<br>РАСТУТ</b></div></section>
 <section class="library section-wrap"><div class="library-toolbar"><div><p class="eyebrow">ВЫБЕРИТЕ ТЕМУ</p><h2>Полезные статьи</h2></div><label class="search-box"><span class="visually-hidden">Поиск по статьям</span><input id="article-search" type="search" placeholder="Например, орхидеи…"><span>⌕</span></label></div>
