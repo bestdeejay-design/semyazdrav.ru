@@ -143,15 +143,24 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
 <meta name="keywords" content="{e(article["query"])}">
 <link rel="canonical" href="{e(canonical)}">
 <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<meta property="og:site_name" content="Семяздрав">
 <meta property="og:type" content="article">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:title" content="{e(page_title)}">
 <meta property="og:description" content="{e(description)}">
 <meta property="og:url" content="{e(canonical)}">
-<meta property="og:image" content="{e(SITE_BASE)}public/images/botanical-hero.jpg">
+<meta property="og:image" content="{e(SITE_BASE)}public/images/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="Семяздрав — советы об уходе за растениями">
 <meta property="article:published_time" content="{TODAY}">
 <meta property="article:modified_time" content="{TODAY}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{e(page_title)}">
+<meta name="twitter:description" content="{e(description)}">
+<meta name="twitter:image" content="{e(SITE_BASE)}public/images/og-cover.jpg">
+<meta name="twitter:image:alt" content="Семяздрав — советы об уходе за растениями">
 <title>{e(page_title)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/articles.css">
@@ -221,7 +230,7 @@ def render_index(articles: list[dict]) -> str:
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="description" content="25 понятных статей об удобрениях, комнатных растениях, рассаде и уходе. Дозировки, сезонные советы и разбор частых проблем.">
 <link rel="canonical" href="{e(canonical)}"><link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Советы по уходу за растениями — Семяздрав"><meta property="og:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/botanical-hero.jpg">
+<meta property="og:site_name" content="Семяздрав"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Советы по уходу за растениями — Семяздрав"><meta property="og:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/og-cover.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="Семяздрав — база знаний по уходу за растениями"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Советы по уходу за растениями — Семяздрав"><meta name="twitter:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta name="twitter:image" content="{e(SITE_BASE)}public/images/og-cover.jpg"><meta name="twitter:image:alt" content="Семяздрав — база знаний по уходу за растениями">
 <title>Советы по уходу за растениями: 25 статей — Семяздрав</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/articles.css"><script src="assets/articles.js" defer></script>
@@ -275,7 +284,8 @@ def render_seo_plan(articles: list[dict]) -> None:
         "## Перед публикацией",
         "",
         "- Проверьте факты о составе, норме и периодичности по этикетке текущего товара.",
-        "- Замените иллюстративное изображение сайта на актуальные фотографии флакона и упаковки.",
+        "- Главная и статьи используют OG/Twitter Card с уникальными заголовками и описаниями; общая обложка `public/images/og-cover.jpg` подготовлена в размере 1200 × 630.",
+        "- При замене иллюстрации на реальные фото сохраняйте пропорцию OG-обложки и пересоберите статьи.",
         "- Подключите Google Search Console и Яндекс Вебмастер, подтвердите домен, отправьте `sitemap.xml` и отслеживайте показы, клики и заявки.",
         "- Для коммерческих целей используйте официальную карточку продавца, актуальные цену и наличие; не обещайте гарантированный рост или цветение.",
         "- Измеряйте клики по карточке товара, но не добавляйте непроверенные отзывы, цены и контактные данные.",
