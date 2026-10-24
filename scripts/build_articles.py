@@ -44,9 +44,35 @@ COVER_BY_CATEGORY = {
     "Рассада": ("plants/seedlings", "Молодая рассада в горшочках на подоконнике"),
 }
 COVER_OVERRIDES = {
+    # Базовый уход: не одна и та же лейка на все пять статей.
+    "udobrenie-dlya-komnatnyh-rasteniy": ("botanical/hero-plants", "Домашний сад из комнатных растений на полке у окна"),
+    "kak-chasto-podkarmlivat-komnatnye-rasteniya": ("botanical/watering", "Полив комнатного растения из лейки"),
+    "podkormka-rasteniy-posle-peresadki": ("botanical/repotting", "Руки пересаживают комнатное растение с земляным комом в терракотовый горшок"),
+    "komnatnye-rasteniya-zimoy-uhod-podkormka": ("botanical/winter-windowsill", "Комнатные растения в горшках на деревянном подоконнике зимой"),
+    "uhod-za-komnatnymi-rasteniyami-vesnoy": ("botanical/soil-sprout", "Руки держат тёмную почву с маленьким зелёным ростком"),
+    # Состав и дозировка: доза, опрыскивание, капля и почва вместо одного макро-листа.
+    "kak-razvodit-zhidkoe-udobrenie": ("botanical/measuring-dose", "Руки наливают отмеренную жидкость из стеклянной ёмкости в лейку"),
+    "kornevaya-i-vnekornevaya-podkormka-rasteniy": ("botanical/watering", "Полив комнатного растения из лейки"),
+    "mozhno-li-opryskivat-rasteniya-udobreniem": ("botanical/spraying-leaves", "Рука опрыскивает листья комнатного растения из пульверизатора"),
+    "chto-takoe-npk-v-udobrenii": ("botanical/droplet-leaf", "Капля воды на зелёном листе крупным планом"),
+    "guminovye-i-fulvovye-kisloty-dlya-rasteniy": ("botanical/soil-sprout", "Руки держат тёмную почву с маленьким зелёным ростком"),
+    "yantarnaya-kislota-dlya-komnatnyh-rasteniy": ("botanical/measuring-dose", "Руки наливают отмеренную жидкость из стеклянной ёмкости в лейку"),
+    "aminokisloty-i-vitaminy-dlya-rasteniy": ("plants/leafy", "Монстера и другие декоративно-лиственные растения"),
+    "organicheskoe-ili-mineralnoe-udobrenie": ("botanical/soil-sprout", "Руки держат тёмную почву с маленьким зелёным ростком"),
+    # Виды растений: по возможности именно то растение, о котором статья.
     "udobrenie-dlya-orhidei": ("plants/orchid", "Цветущий фаленопсис в горшке на подоконнике"),
-    "podkormka-tsvetushchih-rasteniy": ("plants/orchid", "Цветущий фаленопсис в горшке на подоконнике"),
-    "udobrenie-dlya-fialok": ("botanical/watering", "Полив комнатного растения из лейки"),
+    "udobrenie-dlya-fialok": ("plants/violets", "Цветущие фиалки в горшках на светлом подоконнике"),
+    "udobrenie-dlya-fikusa": ("plants/ficus", "Фикус Бенджамина в светлом горшке у окна"),
+    "podkormka-monstery-i-dekorativno-listvennyh": ("plants/leafy", "Монстера и другие декоративно-лиственные растения"),
+    "podkormka-tsvetushchih-rasteniy": ("plants/violets", "Цветущие фиалки в горшках на светлом подоконнике"),
+    "udobrenie-dlya-palm": ("plants/palm", "Комнатная пальма в плетёном кашпо у окна"),
+    "komnatnyy-limon-podkormka-i-uhod": ("botanical/hero-plants", "Комнатные растения на полке у светлого окна"),
+    # Рассада и проблемы.
+    "udobrenie-dlya-rassady-v-domashnih-usloviyah": ("plants/seedlings", "Молодая рассада в горшочках на подоконнике"),
+    "podkormka-rassady-posle-pikirovki": ("botanical/repotting", "Руки пересаживают комнатное растение с земляным комом в терракотовый горшок"),
+    "zhelteyut-listya-komnatnyh-rasteniy": ("botanical/yellow-leaf", "Лист комнатного растения с пожелтевшим краем"),
+    "priznaki-nehvatki-pitaniya-u-rasteniy": ("botanical/leaf-inspection", "Рука осматривает лист комнатного растения с бледными участками между жилками"),
+    "izbytok-udobreniya-priznaki-i-pomoshch": ("botanical/measuring-dose", "Руки наливают отмеренную жидкость из стеклянной ёмкости в лейку"),
 }
 
 
@@ -276,7 +302,7 @@ def render_index(articles: list[dict]) -> str:
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="description" content="25 понятных статей об удобрениях, комнатных растениях, рассаде и уходе. Дозировки, сезонные советы и разбор частых проблем.">
 <link rel="canonical" href="{e(canonical)}"><link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<meta property="og:site_name" content="Семяздрав"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Советы по уходу за растениями — Семяздрав"><meta property="og:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/og-cover.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="Семяздрав — база знаний по уходу за растениями"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Советы по уходу за растениями — Семяздрав"><meta name="twitter:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta name="twitter:image" content="{e(SITE_BASE)}public/images/og-cover.jpg"><meta name="twitter:image:alt" content="Семяздрав — база знаний по уходу за растениями">
+<meta property="og:site_name" content="Семяздрав"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Советы по уходу за растениями — Семяздрав"><meta property="og:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="Семяздрав — база знаний по уходу за растениями"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Советы по уходу за растениями — Семяздрав"><meta name="twitter:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta name="twitter:image" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta name="twitter:image:alt" content="Семяздрав — база знаний по уходу за растениями">
 <title>Советы по уходу за растениями: 25 статей — Семяздрав</title>
 <link rel="icon" type="image/png" sizes="192x192" href="../public/images/icon-192.png"><link rel="apple-touch-icon" sizes="180x180" href="../public/images/apple-touch-icon.png"><link rel="manifest" href="../manifest.webmanifest">
 <link rel="preload" href="../public/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../public/fonts/fonts.css">
@@ -286,7 +312,7 @@ def render_index(articles: list[dict]) -> str:
 <body>
 {page_header("../index.html", "./", "../index.html#product")}
 <main id="main-content">
-<section class="library-hero"><div class="library-hero__inner"><p class="eyebrow">БАЗА ЗНАНИЙ СЕМЯЗДРАВ</p><h1>Растениям —<br><em>понятный уход.</em></h1><p>Практические ответы о подкормках, дозировках и уходе за комнатными растениями и рассадой — без обещаний чудес и советов «на глаз».</p><div class="library-stats"><span><b>{len(articles)}</b> статей</span><span><b>{len(categories)}</b> тематических разделов</span><span>Обновлено {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]}</span></div></div><div class="library-hero__art" aria-hidden="true"><span>✳</span><i></i><b>ЗНАНИЯ<br>РАСТУТ</b></div></section>
+<section class="library-hero"><div class="library-hero__inner"><p class="eyebrow">БАЗА ЗНАНИЙ СЕМЯЗДРАВ</p><h1>Растениям —<br><em>понятный уход.</em></h1><p>Практические ответы о подкормках, дозировках и уходе за комнатными растениями и рассадой — без обещаний чудес и советов «на глаз».</p><div class="library-stats"><span><b>{len(articles)}</b> статей</span><span><b>{len(categories)}</b> тематических разделов</span><span>Обновлено {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]}</span></div></div><figure class="library-hero__media"><picture><source type="image/webp" srcset="../public/images/botanical/library-hero-480.webp 480w, ../public/images/botanical/library-hero-800.webp 800w, ../public/images/botanical/library-hero-1200.webp 1200w" sizes="(max-width: 640px) 100vw, 48vw"><img src="../public/images/botanical/library-hero-800.jpg" srcset="../public/images/botanical/library-hero-480.jpg 480w, ../public/images/botanical/library-hero-800.jpg 800w, ../public/images/botanical/library-hero-1200.jpg 1200w" sizes="(max-width: 640px) 100vw, 48vw" width="1200" height="654" alt="" fetchpriority="high"></picture></figure></section>
 <section class="library section-wrap"><div class="library-toolbar"><div><p class="eyebrow">ВЫБЕРИТЕ ТЕМУ</p><h2>Полезные статьи</h2></div><label class="search-box"><span class="visually-hidden">Поиск по статьям</span><input id="article-search" type="search" placeholder="Например, орхидеи…"><svg class="search-box__icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></label></div>
 <div class="filters" aria-label="Фильтр статей">{filters}</div>
 <div class="article-grid" id="article-grid">{''.join(cards)}</div>

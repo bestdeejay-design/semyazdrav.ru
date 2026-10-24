@@ -33,3 +33,11 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 .article-card{overflow:hidden}
 .footer__links{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
 @media(max-width:640px){.search-box input{font-size:16px}.breadcrumbs{font-size:11px}.library-stats span{font-size:11px}.article-card p{font-size:12px}.footer a:not(.footer-brand){font-size:11px}}
+
+/* === Поправка владельца 24.10.2026: фотография вместо абстрактной графики в hero библиотеки === */
+.library-hero__media{position:absolute;top:0;right:0;width:min(48%,680px);height:100%;margin:0;overflow:hidden}
+.library-hero__media img{display:block;width:100%;height:100%;object-fit:cover;object-position:68% center}
+.library-hero__media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--forest) 0%,rgba(22,60,43,.72) 20%,rgba(22,60,43,0) 58%)}
+.library-hero__art{display:none}
+@media(max-width:850px){.library-hero{min-height:430px}.library-hero h1{font-size:56px}.library-hero__inner>p:not(.eyebrow){max-width:410px}.library-hero__media{width:52%}.library-hero__media:after{background:linear-gradient(90deg,var(--forest) 0%,rgba(22,60,43,.86) 30%,rgba(22,60,43,0) 72%)}}
+@media(max-width:640px){.library-hero{min-height:520px;align-items:flex-start}.library-hero__media{top:auto;bottom:0;width:100%;height:45%}.library-hero__media:after{background:linear-gradient(180deg,var(--forest) 0%,rgba(22,60,43,.62) 42%,rgba(22,60,43,0) 78%)}.library-hero__inner{padding-bottom:170px}}
