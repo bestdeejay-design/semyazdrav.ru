@@ -9,7 +9,7 @@
 ## Ассеты (уже лежат в этом пакете)
 
 - Локап: `partners/logos/semyazdrav-logo.svg` (+ PNG 680/1360 на всякий случай). Скопировать в `assets/img/` репозитория fermaruna.
-- Фото флакона (реальное, не иллюстрация): `public/images/product/bottle-front-516.jpg` из репозитория semyazdrav — или готовый баннер `partners/banners/fermaruna-to-semyazdrav-1200x300.png` как есть.
+- Официальная карточка товара Wildberries целиком (не иллюстрация): `public/images/product/wb-card-516.jpg` из репозитория semyazdrav — или готовый баннер `partners/banners/fermaruna-to-semyazdrav-1200x300.png` как есть.
 - Текст — нейтральный вариант из `partners/copy.md`.
 - Ссылка: `https://semyazdrav.ru/?utm_source=fermaruna&utm_medium=partner&utm_campaign=crosspromo_2026q4` (`target="_blank" rel="noopener noreferrer"`).
 
@@ -25,7 +25,7 @@
     <p>Органический концентрат для комнатных растений, цветов и рассады и спокойная база знаний по уходу за домашним садом.</p>
     <a class="sz-partner__link" href="https://semyazdrav.ru/?utm_source=fermaruna&utm_medium=partner&utm_campaign=crosspromo_2026q4" target="_blank" rel="noopener noreferrer">Перейти на semyazdrav.ru ↗</a>
   </div>
-  <img class="sz-partner__photo" src="assets/img/semyazdrav-bottle.jpg" width="516" height="688" alt="Флакон концентрата «Семяздрав» 250 мл" loading="lazy">
+  <img class="sz-partner__photo" src="assets/img/semyazdrav-card.jpg" width="516" height="688" alt="Карточка товара «Семяздрав» на Wildberries: флакон концентрата 250 мл" loading="lazy">
 </section>
 ```
 
@@ -41,7 +41,7 @@
 @media (max-width:640px){.sz-partner{gap:16px}.sz-partner__photo{width:84px}}
 ```
 
-Файл фото для `assets/img/semyazdrav-bottle.jpg` — это `bottle-front-516.jpg` (переименовать при копировании), локап — `semyazdrav-logo.svg`.
+Файл карточки для `assets/img/semyazdrav-card.jpg` — это `wb-card-516.jpg` (переименовать при копировании), локап — `semyazdrav-logo.svg`.
 
 Альтернатива без вёрстки: поставить готовый баннер `fermaruna-to-semyazdrav-1200x300.png` картинкой-ссылкой (`alt="Семяздрав — пусть дома растёт больше. На semyazdrav.ru"`, `width/height` обязательны). Вёрстка предпочтительнее: текст индексируется и читается скринридерами.
 
@@ -50,5 +50,5 @@
 - Текст — только из `copy.md`; нельзя писать, что ферма использует или рекомендует продукт (см. `PERMISSIONS.md`).
 - После правки шаблонов fermaruna: `python3 scripts/build.py` в её репозитории и коммит сгенерированного результата (по правилам того проекта).
 - Скриншоты 390 и 1440 px: блок не ломает сетку, нет горизонтального скролла, ссылка открывается в новой вкладке, UTM сохраняется в адресной строке semyazdrav.ru.
-- `alt` у фото флакона — информативный (как в сниппете), у локапа — пустой (рядом есть заголовок с названием).
+- `alt` у карточки товара — информативный (как в сниппете), у локапа — пустой (рядом есть заголовок с названием).
 - Не добавлять UTM к ссылкам на Wildberries и не вести с fermaruna напрямую на карточку товара: только на главную semyazdrav.ru с партнёрскими метками.

@@ -317,8 +317,8 @@ def main() -> int:
                     err("manifest.webmanifest", f"icon missing: {icon.get('src')}")
         except json.JSONDecodeError as exc:
             err("manifest.webmanifest", f"invalid JSON: {exc}")
-    if not (ROOT / "public/images/product/bottle-front-516.jpg").exists():
-        err("public/images/product/bottle-front-516.jpg", "real product photo derivative missing")
+    if not (ROOT / "public/images/product/wb-card-516.jpg").exists():
+        err("public/images/product/wb-card-516.jpg", "real product photo derivative missing")
     if not (ROOT / "public/images/SOURCES.md").exists():
         err("public/images/SOURCES.md", "image provenance file missing")
 
