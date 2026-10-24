@@ -10,16 +10,16 @@
 
 | ID | Issue | Задача | Приоритет | Метки | Зависит от | Волна |
 |---|---|---|---|---|---|---|
-| A1 | — | Доступность и функциональные фиксы: контраст, фокус, тач-цели, калькулятор | P0 | `arena` `p0` `accessibility` `bug` | — | 1 |
-| A2 | — | Визуальная полировка: mobile hero, типографика, ритм секций | P1 | `arena` `p1` `design` | A6 (финальные скриншоты) | 2 |
-| A3 | — | Технический SEO: schema.org, meta, 404, manifest, индексация | P1 | `arena` `p1` `seo` | A7 (чекер) | 3 |
-| A4 | — | Контент-аудит 25 статей и редакционный план | P1 | `arena` `p1` `content` | — | 2 |
-| A5 | — | Расширить 10 приоритетных статей до 700–1000 слов | P2 | `arena` `p2` `content` | A4 | 3 |
-| A6 | — | Реальные фото продукта вместо иллюстраций + OG | P0 | `arena` `p0` `assets` `design` | решение владельца по правам | 1 |
-| A7 | — | Аудит продуктовых ссылок и автоматический чекер сайта | P0 | `arena` `p0` `tech` `seo` | — | 1 |
-| A8 | — | Кросс-промо с «Фермой Рунская»: ассеты, блок, пакет для runa | P1 | `arena` `p1` `partner` `design` `assets` | A2, A6, подтверждение партнёрства | 4 |
-| A9 | — | Производительность и техгигиена: шрифты, изображения, 404, manifest | P1 | `arena` `p1` `tech` | A6 | 2 |
-| A10 | — | Страницы доверия и юридический минимум | P2 | `arena` `p2` `content` | решение владельца | 5 |
+| A1 | [#2](https://github.com/bestdeejay-design/semyazdrav.ru/issues/2) | Доступность и функциональные фиксы: контраст, фокус, тач-цели, калькулятор | P0 | `arena` `p0` `accessibility` `bug` | — | 1 |
+| A2 | [#3](https://github.com/bestdeejay-design/semyazdrav.ru/issues/3) | Визуальная полировка: mobile hero, типографика, ритм секций | P1 | `arena` `p1` `design` | A6 (финальные скриншоты) | 2 |
+| A3 | [#4](https://github.com/bestdeejay-design/semyazdrav.ru/issues/4) | Технический SEO: schema.org, meta, 404, manifest, индексация | P1 | `arena` `p1` `seo` | A7 (чекер) | 3 |
+| A4 | [#5](https://github.com/bestdeejay-design/semyazdrav.ru/issues/5) | Контент-аудит 25 статей и редакционный план | P1 | `arena` `p1` `content` | — | 2 |
+| A5 | [#6](https://github.com/bestdeejay-design/semyazdrav.ru/issues/6) | Расширить 10 приоритетных статей до 700–1000 слов | P2 | `arena` `p2` `content` | A4 | 3 |
+| A6 | [#7](https://github.com/bestdeejay-design/semyazdrav.ru/issues/7) | Реальные фото продукта вместо иллюстраций + OG | P0 | `arena` `p0` `assets` `design` | решение владельца по правам | 1 |
+| A7 | [#8](https://github.com/bestdeejay-design/semyazdrav.ru/issues/8) | Аудит продуктовых ссылок и автоматический чекер сайта | P0 | `arena` `p0` `tech` `seo` | — | 1 |
+| A8 | [#9](https://github.com/bestdeejay-design/semyazdrav.ru/issues/9) | Кросс-промо с «Фермой Рунская»: ассеты, блок, пакет для runa | P1 | `arena` `p1` `partner` `design` `assets` | A2, A6, подтверждение партнёрства | 4 |
+| A9 | [#10](https://github.com/bestdeejay-design/semyazdrav.ru/issues/10) | Производительность и техгигиена: шрифты, изображения, 404, manifest | P1 | `arena` `p1` `tech` | A6 | 2 |
+| A10 | [#11](https://github.com/bestdeejay-design/semyazdrav.ru/issues/11) | Страницы доверия и юридический минимум | P2 | `arena` `p2` `content` | решение владельца | 5 |
 
 ## Волны
 

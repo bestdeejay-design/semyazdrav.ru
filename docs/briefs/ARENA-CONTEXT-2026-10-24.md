@@ -11,7 +11,7 @@
 | Параметр | Значение |
 |---|---|
 | Репозиторий | `bestdeejay-design/semyazdrav.ru`, публичный |
-| Ветка | `main`, коммит `0906472`, рабочее дерево чистое |
+| Ветка | `main`, коммит `6b4162f` на момент брифа (актуальный — `git rev-parse main`), рабочее дерево чистое |
 | GitHub Pages | источник `main`, корень, `build_type: legacy`, последняя сборка `0906472` — `built` |
 | CNAME | `semyazdrav.ru`, файл `CNAME` в корне |
 | Канонический домен | `https://semyazdrav.ru` во всех canonical/OG/JSON-LD/sitemap/robots |
