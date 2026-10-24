@@ -15,8 +15,8 @@
 | GitHub Pages | источник `main`, корень, `build_type: legacy`, последняя сборка `0906472` — `built` |
 | CNAME | `semyazdrav.ru`, файл `CNAME` в корне |
 | Канонический домен | `https://semyazdrav.ru` во всех canonical/OG/JSON-LD/sitemap/robots |
-| Публичный домен | пока отдаёт Tilda 404; DNS-делегирование ещё не переключилось |
-| HTTPS | сертификат на домен GitHub ещё не выпустил, `https_enforced: false` |
+| Публичный домен | HTTP 200 через GitHub Pages; DNS расходится: локально и `1.1.1.1` — GitHub, `8.8.8.8` пока кэширует Tilda |
+| HTTPS | сертификат на домен GitHub ещё не выпустил (edge отдаёт `*.github.io`), `https_enforced: false` |
 | Домен | оплачен до `2026-11-16` |
 | Артефакты | `docs/audit/SITE-AUDIT-2026-10-24.md`, этот бриф, очередь задач |
 
