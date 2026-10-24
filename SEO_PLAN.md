@@ -1,4 +1,4 @@
-# SEO-контент-план: 25 статей «Семяздрав»
+# SEO-контент-план: 35 статей «Семяздрав»
 
 Материалы ориентированы на информационные и коммерческие запросы по подкормке комнатных растений и рассады. Частотность и конкуренция не заявлены: перед масштабированием кластеров проверьте их через Яндекс Wordstat, Google Search Console и Яндекс Вебмастер.
 
@@ -29,6 +29,16 @@
 | 23 | аминокислоты и витамины для растений удобрение | Аминокислоты и витамины в удобрении: зачем они растениям | Состав и дозировка | [aminokisloty-i-vitaminy-dlya-rasteniy](https://semyazdrav.ru/articles/aminokisloty-i-vitaminy-dlya-rasteniy/) |
 | 24 | органическое или минеральное удобрение что лучше | Органическое или минеральное удобрение: как выбрать | Состав и дозировка | [organicheskoe-ili-mineralnoe-udobrenie](https://semyazdrav.ru/articles/organicheskoe-ili-mineralnoe-udobrenie/) |
 | 25 | чем подкормить комнатный лимон | Комнатный лимон дома: уход, полив и подкормка по сезонам | Виды растений | [komnatnyy-limon-podkormka-i-uhod](https://semyazdrav.ru/articles/komnatnyy-limon-podkormka-i-uhod/) |
+| 26 | удобрение для замиокулькаса | Удобрение для замиокулькаса: как подкармливать долларовое дерево | Виды растений | [udobrenie-dlya-zamiokulkasa](https://semyazdrav.ru/articles/udobrenie-dlya-zamiokulkasa/) |
+| 27 | удобрение для спатифиллума | Удобрение для спатифиллума: как подкармливать женское счастье | Виды растений | [udobrenie-dlya-spatifilluma](https://semyazdrav.ru/articles/udobrenie-dlya-spatifilluma/) |
+| 28 | удобрение для антуриума | Удобрение для антуриума: как подкармливать мужское счастье дома | Виды растений | [udobrenie-dlya-anturiuma](https://semyazdrav.ru/articles/udobrenie-dlya-anturiuma/) |
+| 29 | подкормка пеларгонии герани удобрение | Подкормка пеларгонии и герани: удобрение для роста и цветения | Виды растений | [podkormka-pelargonii-gerani](https://semyazdrav.ru/articles/podkormka-pelargonii-gerani/) |
+| 30 | удобрение для толстянки денежного дерева | Удобрение для толстянки: как подкармливать денежное дерево дома | Виды растений | [udobrenie-dlya-tolstyanki-denezhnogo-dereva](https://semyazdrav.ru/articles/udobrenie-dlya-tolstyanki-denezhnogo-dereva/) |
+| 31 | подкормка петунии в горшках удобрение | Подкормка петунии в горшках и кашпо: удобрение, полив и прищипка | Виды растений | [podkormka-petunii-v-gorshkah](https://semyazdrav.ru/articles/podkormka-petunii-v-gorshkah/) |
+| 32 | подкормка рассады томатов дома | Подкормка рассады томатов дома: сроки, дозировка и частые ошибки | Рассада | [podkormka-rassady-tomatov](https://semyazdrav.ru/articles/podkormka-rassady-tomatov/) |
+| 33 | подкормка рассады перца дома | Подкормка рассады перца дома: когда начинать и как не перекормить | Рассада | [podkormka-rassady-pertsa](https://semyazdrav.ru/articles/podkormka-rassady-pertsa/) |
+| 34 | первая подкормка рассады после всходов | Первая подкормка рассады: когда вносить после всходов дома | Рассада | [pervaya-podkormka-rassady-posle-vskhodov](https://semyazdrav.ru/articles/pervaya-podkormka-rassady-posle-vskhodov/) |
+| 35 | рассада вытягивается что делать | Рассада вытянулась: что делать, как укрепить и можно ли спасти | Проблемы растений | [rassada-vytyagivaetsya-chto-delat](https://semyazdrav.ru/articles/rassada-vytyagivaetsya-chto-delat/) |
 
 ## Перед публикацией
 

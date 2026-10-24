@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the static Russian SEO article hub and 25 crawlable article pages."""
+"""Generate the static Russian SEO article hub and 35 crawlable article pages."""
 from __future__ import annotations
 
 import json
@@ -69,9 +69,19 @@ COVER_OVERRIDES = {
     "podkormka-tsvetushchih-rasteniy": ("plants/violets", "Цветущие фиалки в горшках на светлом подоконнике"),
     "udobrenie-dlya-palm": ("plants/palm", "Комнатная пальма в плетёном кашпо у окна"),
     "komnatnyy-limon-podkormka-i-uhod": ("plants/lemon", "Комнатное лимонное дерево с жёлтыми плодами у окна"),
+    "udobrenie-dlya-zamiokulkasa": ("plants/zamioculcas", "Замиокулькас с глянцевыми тёмно-зелёными листьями в керамическом горшке у окна"),
+    "udobrenie-dlya-spatifilluma": ("plants/spathiphyllum", "Спатифиллум с зелёными листьями и белыми покрывалами на подоконнике"),
+    "udobrenie-dlya-anturiuma": ("plants/anthurium", "Антуриум с глянцевыми листьями и красными покрывалами в светлой комнате"),
+    "podkormka-pelargonii-gerani": ("plants/pelargonium", "Цветущая пеларгония с красными соцветиями в терракотовом горшке у окна"),
+    "udobrenie-dlya-tolstyanki-denezhnogo-dereva": ("plants/crassula", "Толстянка с толстым стволиком и мясистыми листьями в терракотовом горшке"),
+    "podkormka-petunii-v-gorshkah": ("plants/petunia", "Цветущие петунии разных оттенков в кашпо и подвесной корзине на балконе"),
     # Рассада и проблемы.
     "udobrenie-dlya-rassady-v-domashnih-usloviyah": ("plants/seedlings", "Молодая рассада в горшочках на подоконнике"),
     "podkormka-rassady-posle-pikirovki": ("plants/seedlings-transplant", "Руки пересаживают маленький сеянец с корнями в отдельный горшок"),
+    "podkormka-rassady-tomatov": ("plants/seedlings-transplant", "Руки пересаживают маленький сеянец с корнями в отдельный горшок"),
+    "podkormka-rassady-pertsa": ("plants/seedlings", "Молодая рассада в горшочках на подоконнике"),
+    "pervaya-podkormka-rassady-posle-vskhodov": ("botanical/soil-sprout", "Руки держат тёмную почву с маленьким зелёным ростком"),
+    "rassada-vytyagivaetsya-chto-delat": ("plants/seedlings", "Молодая рассада в горшочках на подоконнике"),
     "zhelteyut-listya-komnatnyh-rasteniy": ("botanical/yellow-leaf", "Лист комнатного растения с пожелтевшим краем"),
     "priznaki-nehvatki-pitaniya-u-rasteniy": ("botanical/leaf-inspection", "Рука осматривает лист комнатного растения с бледными участками между жилками"),
     "izbytok-udobreniya-priznaki-i-pomoshch": ("botanical/measuring-dose", "Руки наливают отмеренную жидкость из стеклянной ёмкости в лейку"),
@@ -385,10 +395,10 @@ def render_index(articles: list[dict]) -> str:
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f7f6ef">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="description" content="25 практических статей о подкормке комнатных растений, цветов и рассады: дозировки, сезонный уход, виды растений и разбор частых проблем без обещаний чудес.">
+<meta name="description" content="{len(articles)} практических статей о подкормке комнатных растений, цветов и рассады: дозировки, сезонный уход, виды растений и разбор частых проблем без обещаний чудес.">
 <link rel="canonical" href="{e(canonical)}"><link rel="alternate" type="application/rss+xml" title="Статьи «Семяздрав»" href="../feed.xml"><link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<meta property="og:site_name" content="Семяздрав"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Уход за комнатными растениями: 25 статей о подкормке и рассаде"><meta property="og:description" content="Дозировки, сезонный уход, виды растений и разбор частых проблем — спокойная база знаний для домашнего сада."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta property="og:image:secure_url" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="Семяздрав — база знаний по уходу за растениями"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Уход за комнатными растениями: 25 статей о подкормке и рассаде"><meta name="twitter:description" content="Дозировки, сезонный уход, виды растений и разбор частых проблем — спокойная база знаний для домашнего сада."><meta name="twitter:image" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta name="twitter:image:alt" content="Семяздрав — база знаний по уходу за растениями">
-<title>Уход за комнатными растениями: 25 статей о подкормке и рассаде</title>
+<meta property="og:site_name" content="Семяздрав"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Уход за комнатными растениями: {len(articles)} статей о подкормке и рассаде"><meta property="og:description" content="Дозировки, сезонный уход, виды растений и разбор частых проблем — спокойная база знаний для домашнего сада."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta property="og:image:secure_url" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="Семяздрав — база знаний по уходу за растениями"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Уход за комнатными растениями: {len(articles)} статей о подкормке и рассаде"><meta name="twitter:description" content="Дозировки, сезонный уход, виды растений и разбор частых проблем — спокойная база знаний для домашнего сада."><meta name="twitter:image" content="{e(SITE_BASE)}public/images/og/library-hero-1200x630.jpg"><meta name="twitter:image:alt" content="Семяздрав — база знаний по уходу за растениями">
+<title>Уход за комнатными растениями: {len(articles)} статей о подкормке и рассаде</title>
 <link rel="icon" type="image/png" sizes="192x192" href="../public/images/icon-192.png"><link rel="apple-touch-icon" sizes="180x180" href="../public/images/apple-touch-icon.png"><link rel="manifest" href="../manifest.webmanifest">
 <link rel="preload" href="../public/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../public/fonts/fonts.css">
 <link rel="stylesheet" href="assets/articles.css"><script src="assets/articles.js" defer></script>
@@ -495,7 +505,7 @@ def render_feed(articles: list[dict]) -> None:
 
 def render_seo_plan(articles: list[dict]) -> None:
     lines = [
-        "# SEO-контент-план: 25 статей «Семяздрав»",
+        f"# SEO-контент-план: {len(articles)} статей «Семяздрав»",
         "",
         "Материалы ориентированы на информационные и коммерческие запросы по подкормке комнатных растений и рассады. Частотность и конкуренция не заявлены: перед масштабированием кластеров проверьте их через Яндекс Wordstat, Google Search Console и Яндекс Вебмастер.",
         "",
@@ -527,8 +537,8 @@ def render_seo_plan(articles: list[dict]) -> None:
 def main() -> None:
     articles = json.loads(DATA_PATH.read_text(encoding="utf-8"))
     tips = json.loads(TIPS_PATH.read_text(encoding="utf-8"))
-    if len(articles) != 25:
-        raise SystemExit(f"Expected exactly 25 articles, got {len(articles)}")
+    if len(articles) != 35:
+        raise SystemExit(f"Expected exactly 35 articles, got {len(articles)}")
     slugs = [item["slug"] for item in articles]
     if len(set(slugs)) != len(slugs):
         raise SystemExit("Article slugs must be unique")

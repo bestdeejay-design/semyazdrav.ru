@@ -360,11 +360,12 @@ def main() -> int:
         err("feed.xml", f"unparsable: {exc}")
 
     # Articles meta + volume (A3/A5 outcomes)
-    if len(articles_data) != 25:
-        err("articles/content.json", f"expected 25 articles, got {len(articles_data)}")
+    if len(articles_data) != 35:
+        err("articles/content.json", f"expected 35 articles, got {len(articles_data)}")
     seen_titles: set[str] = set()
     seen_desc: set[str] = set()
     expanded = 0
+    contextual_inbound: Counter[str] = Counter()
     for article in articles_data:
         slug = article["slug"]
         if article["title"] in seen_titles:
@@ -382,15 +383,25 @@ def main() -> int:
             for s in article["sections"]
         ) + " " + " ".join(q + " " + a for q, a in article.get("faq", []))
         words = len(re.findall(r"[\wЁё-]+", text, flags=re.UNICODE))
-        links = len(re.findall(r"\[\[[a-z0-9-]+\|", json.dumps(article, ensure_ascii=False)))
+        link_targets = re.findall(r"\[\[([a-z0-9-]+)\|", json.dumps(article, ensure_ascii=False))
+        links = len(link_targets)
+        for target in link_targets:
+            if target != "product":
+                contextual_inbound[target] += 1
         if words >= 700:
             expanded += 1
-            if len(article.get("sources", [])) < 2:
-                err("articles/content.json", f"{slug}: expanded article has <2 sources")
-            if links < 2:
-                err("articles/content.json", f"{slug}: expanded article has <2 contextual internal links")
-    if expanded < 10:
-        err("articles/content.json", f"expected at least 10 articles >=700 words, got {expanded}")
+        else:
+            err("articles/content.json", f"{slug}: article has {words} words (<700)")
+        if len(article.get("sources", [])) < 3:
+            err("articles/content.json", f"{slug}: article has <3 sources")
+        if links < 3:
+            err("articles/content.json", f"{slug}: article has <3 contextual internal links")
+    if expanded != len(articles_data):
+        err("articles/content.json", f"expected all {len(articles_data)} articles >=700 words, got {expanded}")
+    min_contextual_inbound = min((contextual_inbound[a["slug"]] for a in articles_data), default=0)
+    for article in articles_data:
+        if contextual_inbound[article["slug"]] < 1:
+            err("articles/content.json", f"{article['slug']}: no inbound contextual links")
 
     # Generated article engagement/distribution invariants: every article is
     # reachable from related blocks and can be shared without third-party scripts.
@@ -437,7 +448,7 @@ def main() -> int:
         err("public/images/SOURCES.md", "image provenance file missing")
 
     print(f"pages: {len(pages)} | Wildberries links: {wb_count} (all must be product {PRODUCT_URL}) | external links checked: {external_count}")
-    print(f"sitemap URLs: {len(found)} | expanded articles (>=700 words): {expanded} | RSS items: {feed_items} | min related inbound: {min_related_inbound}")
+    print(f"sitemap URLs: {len(found)} | expanded articles (>=700 words): {expanded} | RSS items: {feed_items} | min related inbound: {min_related_inbound} | min contextual inbound: {min_contextual_inbound}")
     if errors:
         print(f"\nFAIL — {len(errors)} error(s):", file=sys.stderr)
         for item in errors:
