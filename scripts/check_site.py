@@ -13,6 +13,7 @@ import re
 import struct
 import sys
 import xml.etree.ElementTree as ET
+from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -39,6 +40,8 @@ class Page(HTMLParser):
         self.title = ""
         self.description = ""
         self.robots = ""
+        self.meta: dict[str, list[str]] = {}
+        self.h1_count = 0
         self.ldjson: list[str] = []
         self._in_title = False
         self._ld: list[str] | None = None
@@ -48,10 +51,16 @@ class Page(HTMLParser):
         line = self.getpos()[0]
         if attrs.get("id"):
             self.ids.add(attrs["id"])
+        if tag == "h1":
+            self.h1_count += 1
         if tag == "title":
             self._in_title = True
         if tag == "script" and attrs.get("type") == "application/ld+json":
             self._ld = []
+        if tag == "meta":
+            meta_key = attrs.get("name") or attrs.get("property")
+            if meta_key:
+                self.meta.setdefault(meta_key, []).append(attrs.get("content", ""))
         if tag == "meta" and attrs.get("name") == "description":
             self.description = attrs.get("content", "")
         if tag == "meta" and attrs.get("name") == "robots":
@@ -100,6 +109,22 @@ def jpeg_size(path: Path) -> tuple[int, int] | None:
         seg = struct.unpack(">H", data[i + 2:i + 4])[0]
         i += 2 + seg
     return None
+
+
+def walk_keys(value):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            yield str(key)
+            yield from walk_keys(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from walk_keys(item)
+
+
+def base_url_file(url: str) -> Path | None:
+    if not url.startswith(BASE + "/"):
+        return None
+    return ROOT / unquote(urlparse(url).path.lstrip("/"))
 
 
 def png_size(path: Path) -> tuple[int, int] | None:
@@ -172,6 +197,39 @@ def main() -> int:
             err(path, f"duplicate meta description also in {descriptions[page.description.strip()]}")
         else:
             descriptions[page.description.strip()] = rel
+        if page.h1_count != 1:
+            err(path, f"expected exactly 1 <h1>, found {page.h1_count}")
+        is_noindex = "noindex" in page.robots
+        if not is_noindex:
+            title_text = page.title.strip()
+            if not (35 <= len(title_text) <= 80):
+                err(path, f"<title> length {len(title_text)} outside 35-80")
+            if not (120 <= len(page.description.strip()) <= 170):
+                err(path, f"meta description length {len(page.description.strip())} outside 120-170")
+            def first_meta(key: str) -> str:
+                values = page.meta.get(key, [])
+                return values[0] if values else ""
+
+            for key in (
+                "og:title", "og:description", "og:type", "og:url", "og:image",
+                "og:image:secure_url", "og:image:width", "og:image:height",
+                "og:image:alt", "twitter:card", "twitter:title",
+                "twitter:description", "twitter:image", "twitter:image:alt",
+            ):
+                if not first_meta(key):
+                    err(path, f"missing social meta: {key}")
+            og_image = first_meta("og:image")
+            if og_image:
+                if first_meta("og:image:secure_url") != og_image:
+                    err(path, "og:image:secure_url must match og:image")
+                if first_meta("og:image:width") != "1200" or first_meta("og:image:height") != "630":
+                    err(path, "og:image dimensions meta must be 1200x630")
+                og_file = base_url_file(og_image)
+                if og_file is None:
+                    err(path, f"og:image is not on {BASE}: {og_image}")
+                elif not og_file.exists() or jpeg_size(og_file) != (1200, 630):
+                    got = jpeg_size(og_file) if og_file.exists() else "missing"
+                    err(path, f"og:image file must exist and be 1200x630, got {got}: {og_image}")
         # canonical
         if path.name == "404.html":
             if "noindex" not in page.robots:
@@ -181,10 +239,14 @@ def main() -> int:
                 err(path, f"expected exactly 1 canonical, found {len(page.canonicals)}")
             elif not page.canonicals[0].startswith(BASE + "/"):
                 err(path, f"canonical not on {BASE}: {page.canonicals[0]}")
-        # JSON-LD
+        # JSON-LD: valid JSON and no invented commerce signals.
+        forbidden_schema_keys = {"offers", "aggregateRating", "review", "price", "priceCurrency", "availability"}
         for block in page.ldjson:
             try:
-                json.loads(block)
+                parsed_schema = json.loads(block)
+                found_forbidden = forbidden_schema_keys & set(walk_keys(parsed_schema))
+                if found_forbidden:
+                    err(path, f"forbidden JSON-LD commerce keys: {sorted(found_forbidden)}")
             except json.JSONDecodeError as exc:
                 err(path, f"invalid JSON-LD: {exc}")
         # images
@@ -197,6 +259,8 @@ def main() -> int:
         for tag, ref, line, attrs in page.refs:
             parsed = urlparse(ref)
             if parsed.scheme in ("http", "https"):
+                if parsed.scheme == "http":
+                    err(path, f"external reference must use HTTPS: {ref}", line)
                 host = parsed.netloc.lower()
                 if "wildberries.ru" in host:
                     wb_count += 1
@@ -215,6 +279,8 @@ def main() -> int:
             if not target.exists():
                 err(path, f"broken local reference: {ref}", line)
                 continue
+            if target.suffix.lower() in (".jpg", ".jpeg", ".webp", ".png") and target.stat().st_size > 300_000:
+                err(path, f"referenced image exceeds 300 KB budget ({target.stat().st_size} bytes): {ref}", line)
             if frag and frag != "top" and target.suffix == ".html":
                 target_page = pages.get(target)
                 if target_page is None:
@@ -256,13 +322,42 @@ def main() -> int:
     expected |= {f"{BASE}/articles/{a['slug']}/" for a in articles_data}
     try:
         tree = ET.parse(ROOT / "sitemap.xml")
-        ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+        ns = {
+            "sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
+            "image": "http://www.google.com/schemas/sitemap-image/1.1",
+        }
         found = {el.text.strip() for el in tree.getroot().findall(".//sm:loc", ns) if el.text}
+        for url_el in tree.getroot().findall(".//sm:url", ns):
+            loc_el = url_el.find("sm:loc", ns)
+            page_url = loc_el.text.strip() if loc_el is not None and loc_el.text else ""
+            image_urls = [el.text.strip() for el in url_el.findall(".//image:loc", ns) if el.text]
+            if page_url in expected and not image_urls:
+                err("sitemap.xml", f"URL has no image sitemap entry: {page_url}")
+            for image_url in image_urls:
+                image_file = base_url_file(image_url)
+                if image_file is None or not image_file.exists():
+                    err("sitemap.xml", f"image sitemap file missing: {image_url}")
     except Exception as exc:  # noqa: BLE001
         err("sitemap.xml", f"unparsable: {exc}")
         found = set()
     if found != expected:
         err("sitemap.xml", f"URL set mismatch. missing={sorted(expected - found)} extra={sorted(found - expected)}")
+
+    # RSS feed: generated distribution channel for the article library.
+    feed_items = 0
+    try:
+        feed_tree = ET.parse(ROOT / "feed.xml")
+        feed_links = {
+            el.text.strip()
+            for el in feed_tree.getroot().findall("./channel/item/link")
+            if el.text
+        }
+        feed_items = len(feed_tree.getroot().findall("./channel/item"))
+        expected_feed = {f"{BASE}/articles/{a['slug']}/" for a in articles_data}
+        if feed_links != expected_feed:
+            err("feed.xml", f"RSS item URL set mismatch. missing={sorted(expected_feed - feed_links)} extra={sorted(feed_links - expected_feed)}")
+    except Exception as exc:  # noqa: BLE001
+        err("feed.xml", f"unparsable: {exc}")
 
     # Articles meta + volume (A3/A5 outcomes)
     if len(articles_data) != 25:
@@ -297,6 +392,25 @@ def main() -> int:
     if expanded < 10:
         err("articles/content.json", f"expected at least 10 articles >=700 words, got {expanded}")
 
+    # Generated article engagement/distribution invariants: every article is
+    # reachable from related blocks and can be shared without third-party scripts.
+    related_inbound: Counter[str] = Counter()
+    for article in articles_data:
+        article_path = ROOT / "articles" / article["slug"] / "index.html"
+        article_text = article_path.read_text(encoding="utf-8")
+        related_targets = re.findall(r'class="related-card" href="\.\./([a-z0-9-]+)/"', article_text)
+        if len(related_targets) != 3:
+            err(article_path, f"expected 3 related cards, found {len(related_targets)}")
+        for target in related_targets:
+            related_inbound[target] += 1
+        for share_host in ("t.me/share/url", "vk.com/share.php", "connect.ok.ru/offer"):
+            if share_host not in article_text:
+                err(article_path, f"missing share link: {share_host}")
+    min_related_inbound = min((related_inbound[a["slug"]] for a in articles_data), default=0)
+    for article in articles_data:
+        if related_inbound[article["slug"]] < 1:
+            err("articles/content.json", f"{article['slug']}: no inbound related-card links")
+
     # Image sizes & manifest
     og = ROOT / "public/images/og-cover.jpg"
     if not og.exists() or jpeg_size(og) != (1200, 630):
@@ -323,7 +437,7 @@ def main() -> int:
         err("public/images/SOURCES.md", "image provenance file missing")
 
     print(f"pages: {len(pages)} | Wildberries links: {wb_count} (all must be product {PRODUCT_URL}) | external links checked: {external_count}")
-    print(f"sitemap URLs: {len(found)} | expanded articles (>=700 words): {expanded}")
+    print(f"sitemap URLs: {len(found)} | expanded articles (>=700 words): {expanded} | RSS items: {feed_items} | min related inbound: {min_related_inbound}")
     if errors:
         print(f"\nFAIL — {len(errors)} error(s):", file=sys.stderr)
         for item in errors:

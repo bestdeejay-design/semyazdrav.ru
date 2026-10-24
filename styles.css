@@ -151,3 +151,6 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,[
 .closing__media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--forest) 0%,rgba(22,60,43,.72) 20%,rgba(22,60,43,0) 58%)}
 .closing__content{max-width:640px}
 @media(max-width:720px){.closing__media{top:auto;bottom:0;width:100%;height:46%}.closing__media:after{background:linear-gradient(180deg,var(--forest) 0%,rgba(22,60,43,.62) 42%,rgba(22,60,43,0) 78%)}}
+
+/* Полный аудит 24.10.2026: ссылка доверия рядом с CTA продукта. */
+.product__about-link{margin-top:14px}

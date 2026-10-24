@@ -41,3 +41,14 @@ a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{o
 .library-hero__art{display:none}
 @media(max-width:850px){.library-hero{min-height:430px}.library-hero h1{font-size:56px}.library-hero__inner>p:not(.eyebrow){max-width:410px}.library-hero__media{width:52%}.library-hero__media:after{background:linear-gradient(90deg,var(--forest) 0%,rgba(22,60,43,.86) 30%,rgba(22,60,43,0) 72%)}}
 @media(max-width:640px){.library-hero{min-height:520px;align-items:flex-start}.library-hero__media{top:auto;bottom:0;width:100%;height:45%}.library-hero__media:after{background:linear-gradient(180deg,var(--forest) 0%,rgba(22,60,43,.62) 42%,rgba(22,60,43,0) 78%)}.library-hero__inner{padding-bottom:170px}}
+
+/* === Полный аудит 24.10.2026: шеринг и вторичная ссылка в продуктовом блоке статей === */
+.product-callout__about{display:flex;width:fit-content;align-items:center;min-height:44px;color:#f4f1df;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px;margin-top:8px}
+.product-callout__about:hover{color:#e1e8cb}
+.article-share{margin:34px 0 0;padding:20px 22px;background:#eeeee5;display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center}
+.article-share>b{font-family:var(--display);font-size:15px;color:var(--forest)}
+.article-share>span{flex:1 1 240px;color:#45584c;font-size:12px;line-height:1.6}
+.article-share__links{display:flex;flex-wrap:wrap;gap:8px}
+.article-share__links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid #cbd4c2;background:#fbfaf6;color:var(--forest);font-size:12px;font-weight:700}
+.article-share__links a:hover{background:#e7eadc;border-color:#9db090}
+@media(max-width:640px){.article-share{padding:18px}.article-share__links{width:100%}.article-share__links a{flex:1 1 auto}}

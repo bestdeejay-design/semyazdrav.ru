@@ -23,7 +23,7 @@ python3 -m http.server 4173
 | `articles/tips.json` | Практические советы для статей |
 | `articles/<slug>/index.html` | Сгенерированные страницы статей |
 | `articles/index.html` | Фильтруемая библиотека статей |
-| `scripts/build_articles.py` | Генератор статей, библиотеки, `sitemap.xml`, `robots.txt`, `SEO_PLAN.md` |
+| `scripts/build_articles.py` | Генератор статей, библиотеки, `feed.xml`, `sitemap.xml`, `robots.txt`, `SEO_PLAN.md` |
 | `public/images/product/` | **Настоящие фото флакона** из карточки Wildberries и производные (источники — `public/images/SOURCES.md`) |
 | `public/images/botanical/`, `public/images/plants/` | Ботанические иллюстрации растений и ухода (не фото упаковки), responsive WebP/JPEG |
 | `public/images/og/` | Тематические OG-обложки статей 1200 × 630 |
@@ -47,7 +47,7 @@ python3 scripts/build_articles.py
 make check
 ```
 
-Генератор проверяет, что статей ровно 25, слаги уникальны и совпадают с `tips.json`, затем перезаписывает страницы статей, библиотеку, `sitemap.xml`, `robots.txt` и `SEO_PLAN.md`.
+Генератор проверяет, что статей ровно 25, слаги уникальны и совпадают с `tips.json`, затем перезаписывает страницы статей, библиотеку, `feed.xml`, `sitemap.xml`, `robots.txt` и `SEO_PLAN.md`.
 
 - Канонический адрес по умолчанию — `https://semyazdrav.ru`.
 - Для локального или тестового стенда можно переопределить базу: `SITE_BASE_URL=http://localhost:4173 python3 scripts/build_articles.py`.
