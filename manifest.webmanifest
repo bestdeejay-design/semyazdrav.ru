@@ -1,0 +1,16 @@
+{
+  "name": "Семяздрав — пусть дома растёт больше",
+  "short_name": "Семяздрав",
+  "description": "Органический концентрат для комнатных растений, цветов и рассады и база знаний по уходу за растениями.",
+  "lang": "ru",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f6ef",
+  "theme_color": "#163c2b",
+  "icons": [
+    {"src": "/public/images/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/public/images/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "/public/images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

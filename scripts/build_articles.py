@@ -12,7 +12,8 @@ from urllib.parse import quote
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "articles" / "content.json"
 TIPS_PATH = ROOT / "articles" / "tips.json"
-TODAY = os.environ.get("CONTENT_DATE", "2026-09-30")
+PUBLISHED = os.environ.get("CONTENT_PUBLISHED", "2026-09-30")
+TODAY = os.environ.get("CONTENT_DATE", "2026-10-24")
 SITE_BASE = os.environ.get(
     "SITE_BASE_URL", "https://semyazdrav.ru"
 ).rstrip("/") + "/"
@@ -23,12 +24,43 @@ def e(value: str) -> str:
     return escape(str(value), quote=True)
 
 
+def render_inline(text: str) -> str:
+    """Escape text, expanding [[slug|label]] article links and [[product|label]]."""
+    parts = re.split(r"\[\[([a-z0-9-]+)\|([^\]]+)\]\]", str(text))
+    out = [e(parts[0])]
+    for i in range(1, len(parts), 3):
+        slug, label = parts[i], parts[i + 1]
+        href = "../../index.html#product" if slug == "product" else f"../{slug}/"
+        out.append(f'<a href="{href}">{e(label)}</a>')
+        out.append(e(parts[i + 2]))
+    return "".join(out)
+
+
+COVER_BY_CATEGORY = {
+    "Базовый уход": ("botanical/watering", "Полив комнатного растения из лейки"),
+    "Состав и дозировка": ("botanical/droplet-leaf", "Капля воды на зелёном листе крупным планом"),
+    "Виды растений": ("plants/leafy", "Монстера и другие декоративно-лиственные растения"),
+    "Проблемы растений": ("botanical/yellow-leaf", "Лист комнатного растения с пожелтевшим краем"),
+    "Рассада": ("plants/seedlings", "Молодая рассада в горшочках на подоконнике"),
+}
+COVER_OVERRIDES = {
+    "udobrenie-dlya-orhidei": ("plants/orchid", "Цветущий фаленопсис в горшке на подоконнике"),
+    "podkormka-tsvetushchih-rasteniy": ("plants/orchid", "Цветущий фаленопсис в горшке на подоконнике"),
+    "udobrenie-dlya-fialok": ("botanical/watering", "Полив комнатного растения из лейки"),
+}
+
+
+def cover_for(article: dict) -> tuple[str, str]:
+    return COVER_OVERRIDES.get(article["slug"], COVER_BY_CATEGORY[article["category"]])
+
+
 def json_script(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
 def page_header(home_href: str, blog_href: str, product_href: str) -> str:
-    return f'''<div class="topline">Уход за растениями — просто и бережно</div>
+    return f'''<a class="skip-link" href="#main-content">К содержанию</a>
+<div class="topline">Уход за растениями — просто и бережно</div>
 <header class="site-header">
   <a class="brand" href="{home_href}" aria-label="Семяздрав — на главную"><span class="brand__mark" aria-hidden="true">✳</span><span>семя<b>здрав</b></span></a>
   <nav aria-label="Основная навигация"><a href="{blog_href}">Все статьи</a><a href="{product_href}">О продукте</a><a href="{PRODUCT_URL}" target="_blank" rel="noopener noreferrer">Wildberries ↗</a></nav>
@@ -65,6 +97,11 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
     home_href = "../../index.html"
     blog_href = "../"
     product_href = "../../index.html#product"
+    published = article.get("published", PUBLISHED)
+    updated = article.get("updated", published)
+    cover_path, cover_alt = cover_for(article)
+    cover_name = cover_path.rsplit("/", 1)[-1]
+    cover_og = f"{SITE_BASE}public/images/og/{cover_name}-1200x630.jpg"
     page_title = f"{title} — Семяздрав"
     reading_text = " ".join([
         article["lead"],
@@ -79,11 +116,11 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
     for index, section in enumerate(article["sections"], 1):
         section_id = f"section-{index}"
         toc.append(f'<a href="#{section_id}">{e(section["heading"])}</a>')
-        paragraphs = "\n".join(f"<p>{e(text)}</p>" for text in section.get("paragraphs", []))
+        paragraphs = "\n".join(f"<p>{render_inline(text)}</p>" for text in section.get("paragraphs", []))
         bullets = section.get("bullets", [])
         list_html = ""
         if bullets:
-            list_html = "<ul>" + "".join(f"<li>{e(item)}</li>" for item in bullets) + "</ul>"
+            list_html = "<ul>" + "".join(f"<li>{render_inline(item)}</li>" for item in bullets) + "</ul>"
         sections_html.append(
             f'<section class="article-section" id="{section_id}"><h2>{e(section["heading"])}</h2>{paragraphs}{list_html}</section>'
         )
@@ -92,7 +129,7 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
     faq_html = ""
     if faqs:
         faq_html = '<section class="article-faq"><h2>Частые вопросы</h2>' + "".join(
-            f'<details><summary>{e(question)}</summary><p>{e(answer)}</p></details>'
+            f'<details><summary>{e(question)}</summary><p>{render_inline(answer)}</p></details>'
             for question, answer in faqs
         ) + "</section>"
 
@@ -104,7 +141,7 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
             for name, url in sources
         ) + "</ul></aside>"
 
-    tip_html = f'<aside class="article-tip"><span>ПРАКТИЧЕСКИЙ СОВЕТ</span><p>{e(tips[slug])}</p></aside>'
+    tip_html = f'<aside class="article-tip"><span>ПРАКТИЧЕСКИЙ СОВЕТ</span><p>{render_inline(tips[slug])}</p></aside>'
 
     # Same-category pages are useful next reads; fill to three with nearby content.
     related = [x for x in all_articles if x["slug"] != slug and x["category"] == article["category"]]
@@ -126,11 +163,12 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
         "headline": title,
         "description": description,
         "inLanguage": "ru-RU",
-        "datePublished": TODAY,
-        "dateModified": TODAY,
+        "datePublished": published,
+        "dateModified": updated,
+        "image": cover_og,
         "mainEntityOfPage": canonical,
         "author": {"@type": "Organization", "name": "Семяздрав"},
-        "publisher": {"@type": "Organization", "name": "Семяздрав"},
+        "publisher": {"@type": "Organization", "name": "Семяздрав", "logo": {"@type": "ImageObject", "url": f"{SITE_BASE}public/images/icon-512.png"}},
         "articleSection": article["category"],
         "keywords": article["query"],
     }
@@ -146,7 +184,6 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
 <meta name="theme-color" content="#f7f6ef">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="description" content="{e(description)}">
-<meta name="keywords" content="{e(article["query"])}">
 <link rel="canonical" href="{e(canonical)}">
 <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <meta property="og:site_name" content="Семяздрав">
@@ -155,30 +192,32 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
 <meta property="og:title" content="{e(page_title)}">
 <meta property="og:description" content="{e(description)}">
 <meta property="og:url" content="{e(canonical)}">
-<meta property="og:image" content="{e(SITE_BASE)}public/images/og-cover.jpg">
+<meta property="og:image" content="{e(cover_og)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:alt" content="Семяздрав — советы об уходе за растениями">
-<meta property="article:published_time" content="{TODAY}">
-<meta property="article:modified_time" content="{TODAY}">
+<meta property="og:image:alt" content="{e(cover_alt)} (иллюстрация)">
+<meta property="article:published_time" content="{published}">
+<meta property="article:modified_time" content="{updated}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(page_title)}">
 <meta name="twitter:description" content="{e(description)}">
-<meta name="twitter:image" content="{e(SITE_BASE)}public/images/og-cover.jpg">
-<meta name="twitter:image:alt" content="Семяздрав — советы об уходе за растениями">
+<meta name="twitter:image" content="{e(cover_og)}">
+<meta name="twitter:image:alt" content="{e(cover_alt)} (иллюстрация)">
 <title>{e(page_title)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="192x192" href="../../public/images/icon-192.png"><link rel="apple-touch-icon" sizes="180x180" href="../../public/images/apple-touch-icon.png"><link rel="manifest" href="../../manifest.webmanifest">
+<link rel="preload" href="../../public/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../../public/fonts/fonts.css">
 <link rel="stylesheet" href="../assets/articles.css">
 <script type="application/ld+json">{json_script({"@context":"https://schema.org","@graph":graph})}</script>
 </head>
 <body>
 {page_header(home_href, blog_href, product_href)}
-<main class="article-shell">
-  <div class="breadcrumbs"><a href="{home_href}">Главная</a><span>／</span><a href="{blog_href}">Статьи</a><span>／</span><span>{e(title)}</span></div>
+<main class="article-shell" id="main-content">
+  <div class="breadcrumbs"><a href="{home_href}">Главная</a><span aria-hidden="true">/</span><a href="{blog_href}">Статьи</a><span aria-hidden="true">/</span><span>{e(title)}</span></div>
   <div class="article-layout">
     <article class="article">
-      <header class="article-header"><p class="eyebrow">{e(article["category"])} <span>·</span> {reading_minutes} мин чтения</p><h1>{e(title)}</h1><p class="article-lead">{e(article["lead"])}</p><p class="article-updated">Материал обновлён {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]} · Справочная информация, не заменяет инструкцию на упаковке.</p></header>
+      <header class="article-header"><p class="eyebrow">{e(article["category"])} <span>·</span> {reading_minutes} мин чтения</p><h1>{e(title)}</h1><p class="article-lead">{e(article["lead"])}</p><p class="article-updated">Материал обновлён {updated[8:10]}.{updated[5:7]}.{updated[:4]} · Справочная информация, не заменяет инструкцию на упаковке.</p></header>
+      <figure class="article-cover"><picture><source type="image/webp" srcset="../../public/images/{cover_path}-480.webp 480w, ../../public/images/{cover_path}-800.webp 800w" sizes="(max-width: 720px) 100vw, 760px"><img src="../../public/images/{cover_path}-800.jpg" srcset="../../public/images/{cover_path}-480.jpg 480w, ../../public/images/{cover_path}-800.jpg 800w" sizes="(max-width: 720px) 100vw, 760px" width="800" height="436" alt="{e(cover_alt)}" fetchpriority="high"></picture><figcaption>{e(cover_alt)} — иллюстрация. Фото самого флакона — на <a href="{product_href}">главной странице</a>.</figcaption></figure>
       <nav class="toc" aria-label="Содержание статьи"><b>В статье</b>{''.join(toc)}</nav>
       {''.join(sections_html)}
       {tip_html}
@@ -190,7 +229,7 @@ def render_article(article: dict, all_articles: list[dict], tips: dict[str, str]
   </div>
   <section class="related"><div class="related-heading"><div><p class="eyebrow">ЧИТАЙТЕ ТАКЖЕ</p><h2>Ещё полезное</h2></div><a href="{blog_href}">Все статьи →</a></div><div class="related-grid">{related_html}</div></section>
 </main>
-<footer class="footer"><a class="footer-brand" href="{home_href}">семяздрав</a><span>Здоровый рост начинается с заботы.</span><a href="{blog_href}">База знаний</a><a href="{home_href}#top">Наверх ↑</a></footer>
+<footer class="footer"><a class="footer-brand" href="{home_href}">семяздрав</a><span>Здоровый рост начинается с заботы.</span><nav class="footer__links" aria-label="Служебная навигация"><a href="../../about-product.html">О продукте</a><a href="../../editorial-policy.html">Редакционная политика</a><a href="../../privacy.html">Конфиденциальность</a><a href="{blog_href}">База знаний</a><a href="{home_href}#top">Наверх ↑</a></nav></footer>
 </body>
 </html>
 '''
@@ -201,16 +240,17 @@ def render_index(articles: list[dict]) -> str:
     cards = []
     for article in articles:
         search_text = " ".join((article["title"], article["query"], article["category"], article["description"]))
+        _cover_path, _cover_alt = cover_for(article)
         cards.append(f'''<article class="article-card" data-category="{e(article["category"])}" data-search="{e(search_text.lower())}">
-<a class="article-card__link" href="{e(article["slug"])}/"><span class="article-card__category">{e(article["category"])}</span><h2>{e(article["title"])}</h2><p>{e(article["description"])}</p><span class="article-card__read">Читать статью <b>↗</b></span></a>
+<a class="article-card__link" href="{e(article["slug"])}/"><span class="article-card__media"><picture><source type="image/webp" srcset="../public/images/{_cover_path}-480.webp"><img src="../public/images/{_cover_path}-480.jpg" width="480" height="262" alt="" loading="lazy"></picture></span><span class="article-card__category">{e(article["category"])}</span><h2>{e(article["title"])}</h2><p>{e(article["description"])}</p><span class="article-card__read">Читать статью <b>↗</b></span></a>
 </article>''')
 
     categories = []
     for article in articles:
         if article["category"] not in categories:
             categories.append(article["category"])
-    filters = '<button class="filter is-active" type="button" data-filter="all">Все темы</button>' + "".join(
-        f'<button class="filter" type="button" data-filter="{e(category)}">{e(category)}</button>'
+    filters = '<button class="filter is-active" type="button" data-filter="all" aria-pressed="true">Все темы</button>' + "".join(
+        f'<button class="filter" type="button" data-filter="{e(category)}" aria-pressed="false">{e(category)}</button>'
         for category in categories
     )
     collection_schema = {
@@ -238,33 +278,39 @@ def render_index(articles: list[dict]) -> str:
 <link rel="canonical" href="{e(canonical)}"><link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <meta property="og:site_name" content="Семяздрав"><meta property="og:type" content="website"><meta property="og:locale" content="ru_RU"><meta property="og:title" content="Советы по уходу за растениями — Семяздрав"><meta property="og:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta property="og:url" content="{e(canonical)}"><meta property="og:image" content="{e(SITE_BASE)}public/images/og-cover.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="Семяздрав — база знаний по уходу за растениями"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Советы по уходу за растениями — Семяздрав"><meta name="twitter:description" content="25 практических статей для домашнего сада, комнатных растений и рассады."><meta name="twitter:image" content="{e(SITE_BASE)}public/images/og-cover.jpg"><meta name="twitter:image:alt" content="Семяздрав — база знаний по уходу за растениями">
 <title>Советы по уходу за растениями: 25 статей — Семяздрав</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="192x192" href="../public/images/icon-192.png"><link rel="apple-touch-icon" sizes="180x180" href="../public/images/apple-touch-icon.png"><link rel="manifest" href="../manifest.webmanifest">
+<link rel="preload" href="../public/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="../public/fonts/fonts.css">
 <link rel="stylesheet" href="assets/articles.css"><script src="assets/articles.js" defer></script>
 <script type="application/ld+json">{json_script(collection_schema)}</script>
 </head>
 <body>
 {page_header("../index.html", "./", "../index.html#product")}
-<main>
+<main id="main-content">
 <section class="library-hero"><div class="library-hero__inner"><p class="eyebrow">БАЗА ЗНАНИЙ СЕМЯЗДРАВ</p><h1>Растениям —<br><em>понятный уход.</em></h1><p>Практические ответы о подкормках, дозировках и уходе за комнатными растениями и рассадой — без обещаний чудес и советов «на глаз».</p><div class="library-stats"><span><b>{len(articles)}</b> статей</span><span><b>{len(categories)}</b> тематических разделов</span><span>Обновлено {TODAY[8:10]}.{TODAY[5:7]}.{TODAY[:4]}</span></div></div><div class="library-hero__art" aria-hidden="true"><span>✳</span><i></i><b>ЗНАНИЯ<br>РАСТУТ</b></div></section>
-<section class="library section-wrap"><div class="library-toolbar"><div><p class="eyebrow">ВЫБЕРИТЕ ТЕМУ</p><h2>Полезные статьи</h2></div><label class="search-box"><span class="visually-hidden">Поиск по статьям</span><input id="article-search" type="search" placeholder="Например, орхидеи…"><span>⌕</span></label></div>
+<section class="library section-wrap"><div class="library-toolbar"><div><p class="eyebrow">ВЫБЕРИТЕ ТЕМУ</p><h2>Полезные статьи</h2></div><label class="search-box"><span class="visually-hidden">Поиск по статьям</span><input id="article-search" type="search" placeholder="Например, орхидеи…"><svg class="search-box__icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></label></div>
 <div class="filters" aria-label="Фильтр статей">{filters}</div>
 <div class="article-grid" id="article-grid">{''.join(cards)}</div>
 <p class="no-results" id="no-results" hidden>По этому запросу статей не найдено. Попробуйте другое слово.</p>
+<p class="visually-hidden" id="search-status" aria-live="polite"></p>
 </section>
 <section class="library-cta"><div><p class="eyebrow">ПОДКОРМКА ДЛЯ ДОМАШНЕГО САДА</p><h2>Семяздрав — один концентрат<br>для разных растений.</h2><p>Состав, применение и актуальная карточка товара — на странице продукта.</p></div><a href="../index.html#product" class="button">Узнать о продукте <span>↗</span></a></section>
 </main>
-<footer class="footer"><a class="footer-brand" href="../index.html">семяздрав</a><span>Здоровый рост начинается с заботы.</span><a href="../index.html#product">О продукте</a><a href="../index.html#top">На главную ↑</a></footer>
+<footer class="footer"><a class="footer-brand" href="../index.html">семяздрав</a><span>Здоровый рост начинается с заботы.</span><nav class="footer__links" aria-label="Служебная навигация"><a href="../about-product.html">О продукте и продавце</a><a href="../editorial-policy.html">Редакционная политика</a><a href="../privacy.html">Конфиденциальность</a><a href="../index.html#top">На главную ↑</a></nav></footer>
 </body>
 </html>
 '''
 
 
 def render_robots_and_sitemap(articles: list[dict]) -> None:
-    sitemap_entries = [(SITE_BASE, "1.0"), (f"{SITE_BASE}articles/", "0.9")]
-    sitemap_entries.extend((f"{SITE_BASE}articles/{quote(article['slug'])}/", "0.8") for article in articles)
+    sitemap_entries = [(SITE_BASE, "1.0", TODAY), (f"{SITE_BASE}articles/", "0.9", TODAY),
+                       (f"{SITE_BASE}about-product.html", "0.7", TODAY), (f"{SITE_BASE}editorial-policy.html", "0.5", TODAY)]
+    sitemap_entries.extend(
+        (f"{SITE_BASE}articles/{quote(article['slug'])}/", "0.8", article.get("updated", article.get("published", PUBLISHED)))
+        for article in articles
+    )
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for url, priority in sitemap_entries:
-        sitemap.append(f"  <url><loc>{e(url)}</loc><lastmod>{TODAY}</lastmod><priority>{priority}</priority></url>")
+    for url, priority, lastmod in sitemap_entries:
+        sitemap.append(f"  <url><loc>{e(url)}</loc><lastmod>{lastmod}</lastmod><priority>{priority}</priority></url>")
     sitemap.append("</urlset>")
     (ROOT / "sitemap.xml").write_text("\n".join(sitemap) + "\n", encoding="utf-8")
     (ROOT / "robots.txt").write_text(
@@ -290,8 +336,8 @@ def render_seo_plan(articles: list[dict]) -> None:
         "## Перед публикацией",
         "",
         "- Проверьте факты о составе, норме и периодичности по этикетке текущего товара.",
-        "- Главная и статьи используют OG/Twitter Card с уникальными заголовками и описаниями; общая обложка `public/images/og-cover.jpg` подготовлена в размере 1200 × 630.",
-        "- При замене иллюстрации на реальные фото сохраняйте пропорцию OG-обложки и пересоберите статьи.",
+        "- Главная и статьи используют OG/Twitter Card с уникальными заголовками и описаниями; у главной — обложка с настоящим флаконом `public/images/og-cover.jpg` (1200 × 630), у статей — тематические обложки `public/images/og/*-1200x630.jpg`.",
+        "- Фото флакона на сайте — настоящее, из карточки Wildberries (см. `public/images/SOURCES.md`); при замене фото сохраняйте пропорцию OG-обложки и пересоберите статьи. Запуск проверок: `make check`.",
         "- Подключите Google Search Console и Яндекс Вебмастер, подтвердите домен, отправьте `sitemap.xml` и отслеживайте показы, клики и заявки.",
         "- Для коммерческих целей используйте официальную карточку продавца, актуальные цену и наличие; не обещайте гарантированный рост или цветение.",
         "- Измеряйте клики по карточке товара, но не добавляйте непроверенные отзывы, цены и контактные данные.",
